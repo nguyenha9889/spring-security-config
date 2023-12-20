@@ -14,12 +14,12 @@ public class RestApiApplication {
 	}
 
 	@Bean
-	public PasswordEncoder passwordEncoder(){
-		return new BCryptPasswordEncoder();
+	public ModelMapper modelMapper(){
+		return new ModelMapper();
 	}
 
 	@Bean
-	public ModelMapper modelMapper(){
-		return new ModelMapper();
+	public PasswordEncoder passwordEncoder(){
+		return new BCryptPasswordEncoder();
 	}
 }
