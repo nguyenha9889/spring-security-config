@@ -1,7 +1,7 @@
 package com.restapi.repository;
 
-import com.restapi.entity.Role;
-import com.restapi.entity.RoleName;
+import com.restapi.model.Role;
+import com.restapi.model.RoleName;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
