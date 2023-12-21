@@ -7,8 +7,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface IUserRepository extends JpaRepository<User, Long> {
-   Optional<User> findByUsernameOrEmail(String username, String email);
-   Boolean existsByUsernameOrEmail(String username, String email);
-
+public interface IUserRepository extends JpaRepository<User, String> {
+   Optional<User> findByUsername(String username);
+   Boolean existsByUsername(String username);
+   Boolean existsByEmail(String email);
 }

@@ -22,17 +22,25 @@ public class RefreshTokenService implements IRefreshTokenService {
    private final IRefreshTokenRepository refreshTokenRepository;
    private final IUserRepository userRepository;
    @Override
-   public int delete(Long userId) {
+   public void deleteByUser(String userId) {
       User user = userRepository.findById(userId).orElseThrow(
             () -> new ResourceNotFoundException("User not found")
       );
-      return refreshTokenRepository.deleteByUser(user) ;
+      refreshTokenRepository.deleteByUser(user) ;
+   }
+
+   @Override
+   public RefreshToken generateRefreshToken(String token) {
+      RefreshToken refreshToken = findByToken(token);
+      refreshToken.setToken(UUID.randomUUID().toString());
+      refreshToken.setExpiryDate(Instant.now().plusMillis(expiredRefreshToken));
+      return refreshToken;
    }
 
    @Override
    public RefreshToken findByToken(String token) {
       return refreshTokenRepository.findByToken(token).orElseThrow(
-            () -> new ResourceNotFoundException("Token is incorrect")
+            () -> new TokenRefreshException(token, "Token is incorrect")
       );
    }
 
@@ -42,7 +50,7 @@ public class RefreshTokenService implements IRefreshTokenService {
    }
 
    @Override
-   public RefreshToken createRefreshToken(Long userId) {
+   public RefreshToken createRefreshToken(String userId) {
       return RefreshToken.builder()
             .id(null)
             .user(userRepository.findById(userId).get())
@@ -52,13 +60,12 @@ public class RefreshTokenService implements IRefreshTokenService {
    }
 
    @Override
-   public RefreshToken verifyExpiration(RefreshToken token) {
+   public boolean verifyExpiration(RefreshToken token) {
       if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
          refreshTokenRepository.delete(token);
-         throw new TokenRefreshException(token.getToken(),
-               "Refresh token was expired. Please make a new sign-in request");
+         return true;
       }
 
-      return token;
+      return false;
    }
 }

@@ -1,5 +1,6 @@
 package com.restapi.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -33,7 +34,9 @@ public class RegisterRequest {
    @NotBlank
    @Size(min = 6, max = 50)
    private String password;
+   private String confirmPassword;
    private Boolean gender;
+   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
    private Date birthday;
 
    private Set<String> roles;

@@ -14,7 +14,9 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 
 /**
@@ -35,14 +37,14 @@ public class JwtUtils {
    @Value("${jwt.expired.access-token}")
    private long expiredAccess;
 
-   public ResponseCookie generateJwtCookie(UserDetailCustom principal) {
-      String jwtToken = generateTokenFromUsername(principal.getUsername());
-      return generateCookie(jwtCookie, jwtToken, "/api/v1");
-   }
-
    public ResponseCookie generateJwtCookie(User user) {
       String jwtToken = generateTokenFromUsername(user.getUsername());
-      return generateCookie(jwtCookie, jwtToken, "/api/v1");
+      return generateCookie(jwtCookie, jwtToken, "/api/v1/auth");
+   }
+
+   public ResponseCookie generateJwtCookie(UserDetailCustom userDetail) {
+      String jwtToken = generateTokenFromUsername(userDetail.getUsername());
+      return generateCookie(jwtCookie, jwtToken, "/api/v1/auth");
    }
 
    public ResponseCookie generateRefreshJwtCookie(String refreshToken) {
@@ -90,7 +92,8 @@ public class JwtUtils {
    }
 
    private Key key() {
-      return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+      byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
+      return Keys.hmacShaKeyFor(keyBytes);
    }
    public String generateTokenFromUsername(String username) {
       return Jwts.builder()
